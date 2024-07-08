@@ -40,18 +40,6 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`taskid`, `mark`, `task`, `uid`) VALUES
-(58, 0, 'dasdas', 6),
-(59, 0, 'dasdas', 6),
-(60, 0, 'dasdsa', 6),
-(61, 1, 'dasdas', 6),
-(62, 0, 'dasdsa', 6),
-(68, 0, '48941', 6),
-(71, 0, 'dasdasdas', 9),
-(72, 1, 'dasdasdasd', 9),
-(73, 1, 'asdasdas', 9),
-(74, 0, 'jghjkghj', 9);
-
 -- --------------------------------------------------------
 
 --
