@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>To-Do List</title>
+	<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+	<%- include('header.ejs') %>
+	<div class="login-container">
+		<form class="login-form" action="/login" method="POST">
+            <h2>התחברות</h2>
+            <div class="input-group">
+                <label for="username">שם משתמש</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">סיסמה</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+			<% if (message1) { %>
+				<p style="text-align: center;"><b>שם המשתמש ו/או הסיסמה שגויים.</b></p>
+			<% } %>
+            <button type="submit">התחבר</button>
+        </form>
+    </div>
+</body>
+</html>

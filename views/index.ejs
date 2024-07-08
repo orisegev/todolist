@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>To-Do List</title>
+	<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+	<%- include('header.ejs') %>
+
+	<div class="task-list-container">
+	
+		<div class="task-list" id="task-list">
+			<h1>רשימת מטלות</h1>
+			<div class="add-new-task">
+				<input type="text" id="taskInput" placeholder="הקלד/י מטלה חדשה">
+				<button onclick="addTask()">+</button>
+			</div>
+			<div id="task-the-list">
+				<% tasks.forEach(task => { %>
+					<div class="task">
+						<% if (task.mark) { %>
+							<div class="task-text strikethrough" id="<%= task.taskid %>"><%= task.task %></div>
+							<div class="btns">
+							<button class="delete-btn" onclick="unmarkTask(<%= task.taskid %>)">V</button>
+							<button class="delete-btn" onclick="removeTask(<%= task.taskid %>)">X</button>
+						</div>
+						<% } else { %>
+							<div class="task-text" id="<%= task.taskid %>"><%= task.task %></div>
+							<div class="btns">
+							<button class="delete-btn" id="mrkbtn" onclick="markTask(<%= task.taskid %>)">V</button>
+							<button class="delete-btn" onclick="removeTask(<%= task.taskid %>)">X</button>
+						</div>
+						<% } %>
+						
+					</div>
+				<% }); %>
+			</div>
+			
+		</div>
+    </div>
+	
+<script>
+	function addTask() {
+		const task = document.getElementById('taskInput').value;
+		fetch('/add-task', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ task })
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data.taskId) {
+			
+				const taskId = data.taskId;
+				
+				// Create a new div element
+				const newDiv = document.createElement('div');
+				
+				
+				
+				// Set some properties for the new div
+				newDiv.className = 'task';
+				
+
+				const txtDiv = document.createElement('div');
+				txtDiv.classList.add('task-text');
+				newDiv.appendChild(txtDiv);
+				
+				
+				txtDiv.textContent = task;
+				
+				
+				// Append the new div to the container
+				const container = document.getElementById('task-the-list');
+				container.insertBefore(newDiv, container.firstChild);
+				
+				
+			
+				const btnsDiv = document.createElement('div');
+				btnsDiv.classList.add('btns');
+				newDiv.appendChild(btnsDiv);
+				
+				
+				//add mark button
+				const markButton = document.createElement('button');
+				markButton.className = 'delete-btn';
+				markButton.textContent = 'V';
+				markButton.setAttribute('onclick', `markTask(${taskId})`);
+				btnsDiv.appendChild(markButton);
+				
+				// Add delete button
+				const deleteButton = document.createElement('button');
+				deleteButton.className = 'delete-btn';
+				deleteButton.textContent = 'X';
+				deleteButton.setAttribute('onclick', `removeTask(${taskId})`);
+				btnsDiv.appendChild(deleteButton);
+
+				document.getElementById('taskInput').value = '';
+				
+			} else {
+				console.error('Failed to add task');
+			}	
+		})
+		.catch(error => console.error('Error:', error));
+	}
+	
+	function removeTask(id) {
+    if (confirm('האם אתה בטוח שברצונך למחוק את המטלה?')) {
+			fetch(`/tasks/${id}`, { method: 'DELETE' })
+				.then(response => {
+					if (response.ok) {
+						// Reload the page after deletion
+						window.location.reload();
+					} else {
+						throw new Error('Failed to delete task');
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('Failed to delete task');
+				});
+		}
+	}
+	/*function togglebutton(id) {
+	var element = document.getElementById(id);
+		 if (element.classList.contains('strikethrough')) {
+			markTask(id);
+        } else {
+            unmarkTask(id);
+        }
+	}*/
+	function markTask(id) {
+		return fetch(`/task-mark/${id}`, { method: 'POST' })
+			.then(response => {
+				if (response.ok) {
+					const element = document.getElementById(id);
+					if (element) {
+						element.classList.add('strikethrough');
+					}
+				} else {
+					throw new Error('Failed to mark task');
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				alert('Failed to mark task');
+				throw error; // Rethrow the error if needed for further handling
+			});
+	}
+	
+	function unmarkTask(id) {
+		return fetch(`/task-unmark/${id}`, { method: 'POST' })
+			.then(response => {
+				if (response.ok) {
+					const element = document.getElementById(id);
+					if (element) {
+						element.className = '';
+					}
+				} else {
+					throw new Error('Failed to unmark task');
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				alert('Failed to unmark task');
+				throw error; // Rethrow the error if needed for further handling
+			});
+	}
+	
+</script>
+</body>
+</html>
